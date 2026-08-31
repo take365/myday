@@ -9,7 +9,7 @@ type FormState = { title: string; date: string; startTime: string; endTime: stri
 // Use the UTC calendar date for the first render so server and browser agree
 // even when they run in different time zones. The local date is applied after
 // hydration.
-const initialDateKey = new Date().toISOString().slice(0, 10);
+const initialDateKey = "2000-01-01";
 const initialDate = new Date(`${initialDateKey}T00:00:00Z`);
 function dateKey(date: Date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`; }
 const MAX_FILE_BYTES = 1024 * 1024;
