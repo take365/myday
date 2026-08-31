@@ -6,18 +6,21 @@ type Attachment = { id: string; filename: string; size: number; contentType: str
 type EventItem = { id: string; title: string; date: string; startTime: string; endTime: string; category: string; notes: string; completed: boolean; attachments?: Attachment[] };
 type FormState = { title: string; date: string; startTime: string; endTime: string; category: string; notes: string };
 
-const today = new Date();
+// Use the UTC calendar date for the first render so server and browser agree
+// even when they run in different time zones. The local date is applied after
+// hydration.
+const initialDateKey = new Date().toISOString().slice(0, 10);
+const initialDate = new Date(`${initialDateKey}T00:00:00Z`);
 function dateKey(date: Date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`; }
-const todayKey = dateKey(today);
 const MAX_FILE_BYTES = 1024 * 1024;
 const SAFE_IMAGE_BYTES = 900 * 1024;
 const monthNames = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
 const weekNames = ["日", "月", "火", "水", "木", "金", "土"];
-const demoEvents: EventItem[] = [
-  { id: "demo-1", title: "請求書を確認", date: todayKey, startTime: "09:30", endTime: "10:00", category: "仕事", notes: "", completed: false },
-  { id: "demo-2", title: "買い物に行く", date: todayKey, startTime: "18:00", endTime: "19:00", category: "生活", notes: "洗剤と牛乳", completed: false },
-  { id: "demo-3", title: "企画の下書き", date: todayKey, startTime: "13:00", endTime: "14:30", category: "仕事", notes: "", completed: false },
-];
+function demoEventsFor(date: string): EventItem[] { return [
+  { id: "demo-1", title: "請求書を確認", date, startTime: "09:30", endTime: "10:00", category: "仕事", notes: "", completed: false },
+  { id: "demo-2", title: "買い物に行く", date, startTime: "18:00", endTime: "19:00", category: "生活", notes: "洗剤と牛乳", completed: false },
+  { id: "demo-3", title: "企画の下書き", date, startTime: "13:00", endTime: "14:30", category: "仕事", notes: "", completed: false },
+]; }
 
 function formatDate(key: string) { return new Intl.DateTimeFormat("ja-JP", { month: "long", day: "numeric", weekday: "short" }).format(new Date(`${key}T00:00:00`)); }
 function daysForMonth(year: number, month: number) { const first = new Date(year, month, 1); const start = new Date(year, month, 1 - first.getDay()); return Array.from({ length: 42 }, (_, i) => new Date(start.getFullYear(), start.getMonth(), start.getDate() + i)); }
@@ -48,15 +51,17 @@ async function prepareAttachment(file: File): Promise<{ file: File; optimized: b
 }
 
 export default function Home() {
-  const [cursor, setCursor] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
-  const [selectedDate, setSelectedDate] = useState(todayKey);
-  const [events, setEvents] = useState<EventItem[]>(demoEvents);
+  const [today, setToday] = useState(initialDate);
+  const [todayKey, setTodayKey] = useState(dateKey(initialDate));
+  const [cursor, setCursor] = useState(new Date(initialDate.getFullYear(), initialDate.getMonth(), 1));
+  const [selectedDate, setSelectedDate] = useState(dateKey(initialDate));
+  const [events, setEvents] = useState<EventItem[]>(demoEventsFor(dateKey(initialDate)));
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [editorOpen, setEditorOpen] = useState(false);
   const [detailEvent, setDetailEvent] = useState<EventItem | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState<FormState>(emptyForm(todayKey));
+  const [form, setForm] = useState<FormState>(emptyForm(dateKey(initialDate)));
   const [attachment, setAttachment] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
@@ -65,7 +70,17 @@ export default function Home() {
   const selectedEvents = events.filter((event) => event.date === selectedDate).sort((a, b) => a.startTime.localeCompare(b.startTime));
   const openEvents = events.filter((event) => !event.completed).length;
 
-  useEffect(() => { void loadCalendar(); }, []);
+  useEffect(() => {
+    const current = new Date();
+    const currentKey = dateKey(current);
+    setToday(current);
+    setTodayKey(currentKey);
+    setCursor(new Date(current.getFullYear(), current.getMonth(), 1));
+    setSelectedDate(currentKey);
+    setForm(emptyForm(currentKey));
+    setEvents(demoEventsFor(currentKey));
+    void loadCalendar();
+  }, []);
 
   async function loadCalendar() {
     const response = await fetch("/api/calendar");
