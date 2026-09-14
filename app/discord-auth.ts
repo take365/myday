@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 const COOKIE = "myday_discord_session";
 const encoder = new TextEncoder();
 
-type Session = { id: string; username: string; guildName: string; exp: number };
+type Session = { id: string; username: string; guildId: string; guildName: string; exp: number };
 
 function secret() { return (env as unknown as { DISCORD_OAUTH_SESSION_SECRET?: string }).DISCORD_OAUTH_SESSION_SECRET ?? ""; }
 async function sign(value: string) { return Array.from(new Uint8Array(await crypto.subtle.sign("HMAC", await key(), encoder.encode(value)))).map((b) => b.toString(16).padStart(2, "0")).join(""); }
@@ -25,7 +25,7 @@ export async function sessionCookie(session: Session) {
 }
 export async function setDiscordSession(session: Session) { const encoded = encodeBase64(JSON.stringify(session)); return `${COOKIE}=${encoded}.${await sign(encoded)}; Path=/; Max-Age=${60 * 60 * 24 * 7}; HttpOnly; Secure; SameSite=Lax`; }
 export function clearDiscordSessionCookie() { return `${COOKIE}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax`; }
-export function discordOwnerKey(id: string) { return `discord:${id}`; }
+export function discordOwnerKey(guildId: string) { return `discord:guild:${guildId}`; }
 function cookieValue(header: string, name: string) { return header.split(";").map((part) => part.trim()).find((part) => part.startsWith(`${name}=`))?.slice(name.length + 1) ?? ""; }
 function encodeBase64(value: string) { const bytes = new TextEncoder().encode(value); let binary = ""; for (const byte of bytes) binary += String.fromCharCode(byte); return btoa(binary); }
 function decodeBase64(value: string) { const binary = atob(value); return new TextDecoder().decode(Uint8Array.from(binary, (char) => char.charCodeAt(0))); }
