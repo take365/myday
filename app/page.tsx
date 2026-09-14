@@ -51,6 +51,12 @@ const eventMeta: Array<{ match: string; meta: EventMeta }> = [
   { match: "関西FIRE交流会", meta: { tags: ["関西地方"], sourceUrl: fireTerraceChannelUrl } },
   { match: "人生を最期から逆算するカードゲーム", meta: { tags: ["関西地方"], sourceUrl: "https://discord.com/channels/1272562436393799760/1545767427965583431" } },
   { match: "中部麻雀会", meta: { tags: ["中部地方"], sourceUrl: "https://discord.com/channels/1272562436393799760/1537064555077832734" } },
+  { match: "名古屋ボドゲ会", meta: { tags: ["中部地方"], sourceUrl: "https://discord.com/channels/1272562436393799760/1542533110682361906" } },
+  { match: "大人の社会科見学", meta: { tags: ["関東地方"], sourceUrl: "https://discord.com/channels/1272562436393799760/1548883284019249222" } },
+  { match: "関西 麻雀オフ会", meta: { tags: ["関西地方"], sourceUrl: "https://discord.com/channels/1272562436393799760/1548883284019249222" } },
+  { match: "関西 ランチオフ会", meta: { tags: ["関西地方"], sourceUrl: "https://discord.com/channels/1272562436393799760/1548883284019249222" } },
+  { match: "出雲～隠岐の島", meta: { tags: ["関東地方", "中部地方", "関西地方"], sourceUrl: "https://discord.com/channels/1272562436393799760/1548883284019249222" } },
+  { match: "キャッシュフローゲーム会", meta: { tags: ["関東地方"], sourceUrl: "https://discord.com/channels/1272562436393799760/1548883577733906502" } },
 ];
 function metadataFor(event: EventItem): EventMeta {
   return eventMeta.find((entry) => event.title.includes(entry.match))?.meta ?? { tags: [] };
