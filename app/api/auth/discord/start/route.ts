@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { env } from "cloudflare:workers";
 export const dynamic = "force-dynamic";
@@ -9,5 +8,5 @@ export async function GET(request: Request) {
   const url = new URL("https://discord.com/oauth2/authorize");
   url.searchParams.set("client_id", e.DISCORD_APPLICATION_ID ?? ""); url.searchParams.set("response_type", "code"); url.searchParams.set("scope", "identify"); url.searchParams.set("redirect_uri", e.DISCORD_OAUTH_REDIRECT_URI ?? new URL("/api/auth/discord/callback", request.url).toString());
   url.searchParams.set("state", state);
-  redirect(url.toString());
+  return Response.redirect(url.toString(), 302);
 }
