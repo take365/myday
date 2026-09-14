@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { getDb } from "../../../../db";
 import { apiTokens, events } from "../../../../db/schema";
 import { hashApiToken } from "../../api-auth";
+import { discordOwnerKey, verifyCalendarFeedSignature } from "../../../discord-auth";
 
 export const dynamic = "force-dynamic";
 
@@ -18,14 +19,22 @@ function eventDateTime(date: string, time: string) { return `${compactDate(date)
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const rawToken = url.searchParams.get("token")?.trim() ?? "";
-  if (!rawToken) return new Response("Calendar subscription token is required.", { status: 401 });
-  const tokenHash = await hashApiToken(rawToken);
   const db = getDb();
-  const [token] = await db.select().from(apiTokens).where(eq(apiTokens.tokenHash, tokenHash)).limit(1);
-  if (!token) return new Response("Invalid calendar subscription token.", { status: 401 });
-  await db.update(apiTokens).set({ lastUsedAt: new Date().toISOString() }).where(eq(apiTokens.id, token.id));
-  const rows = await db.select().from(events).where(eq(events.ownerEmail, token.ownerEmail));
+  const rawToken = url.searchParams.get("token")?.trim() ?? "";
+  let ownerEmail = "";
+  if (rawToken) {
+    const tokenHash = await hashApiToken(rawToken);
+    const [token] = await db.select().from(apiTokens).where(eq(apiTokens.tokenHash, tokenHash)).limit(1);
+    if (!token) return new Response("Invalid calendar subscription token.", { status: 401 });
+    await db.update(apiTokens).set({ lastUsedAt: new Date().toISOString() }).where(eq(apiTokens.id, token.id));
+    ownerEmail = token.ownerEmail;
+  } else {
+    const guildId = url.searchParams.get("guild")?.trim() ?? "";
+    const signature = url.searchParams.get("sig")?.trim() ?? "";
+    if (!guildId || !signature || !(await verifyCalendarFeedSignature(guildId, signature))) return new Response("Invalid calendar subscription URL.", { status: 401 });
+    ownerEmail = discordOwnerKey(guildId);
+  }
+  const rows = await db.select().from(events).where(eq(events.ownerEmail, ownerEmail));
   const body = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",

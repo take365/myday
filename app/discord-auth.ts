@@ -10,6 +10,8 @@ function secret() { return (env as unknown as { DISCORD_OAUTH_SESSION_SECRET?: s
 async function sign(value: string) { return Array.from(new Uint8Array(await crypto.subtle.sign("HMAC", await key(), encoder.encode(value)))).map((b) => b.toString(16).padStart(2, "0")).join(""); }
 async function key() { return crypto.subtle.importKey("raw", encoder.encode(secret()), { name: "HMAC", hash: "SHA-256" }, false, ["sign", "verify"]); }
 async function verify(value: string, signature: string) { return crypto.subtle.verify("HMAC", await key(), Uint8Array.from(signature.match(/.{2}/g) ?? [], (x) => parseInt(x, 16)), encoder.encode(value)); }
+export async function calendarFeedSignature(guildId: string) { return sign(`calendar-feed:${guildId}`); }
+export async function verifyCalendarFeedSignature(guildId: string, signature: string) { return verify(`calendar-feed:${guildId}`, signature); }
 
 export async function getDiscordSession(request?: Request): Promise<Session | null> {
   if (!secret()) return null;
