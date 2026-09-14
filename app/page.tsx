@@ -43,6 +43,12 @@ const eventMeta: Array<{ match: string; meta: EventMeta }> = [
   { match: "横浜水石展", meta: { tags: ["関東地方"], sourceUrl: fireTerraceChannelUrl } },
   { match: "大阪版 FIREテラス", meta: { tags: ["関西地方"], sourceUrl: fireTerraceChannelUrl } },
   { match: "NGKお笑い観劇", meta: { tags: ["関西地方"], sourceUrl: fireTerraceChannelUrl } },
+  { match: "青いクジラは沈まない", meta: { tags: ["関東地方"], sourceUrl: fireTerraceChannelUrl } },
+  { match: "機巧人形の心臓", meta: { tags: ["関東地方"], sourceUrl: fireTerraceChannelUrl } },
+  { match: "ツイン号沈没事故", meta: { tags: ["関東地方"], sourceUrl: fireTerraceChannelUrl } },
+  { match: "東京FIRE交流会", meta: { tags: ["関東地方"], sourceUrl: fireTerraceChannelUrl } },
+  { match: "中部FIRE交流会", meta: { tags: ["中部地方"], sourceUrl: fireTerraceChannelUrl } },
+  { match: "関西FIRE交流会", meta: { tags: ["関西地方"], sourceUrl: fireTerraceChannelUrl } },
 ];
 function metadataFor(event: EventItem): EventMeta {
   return eventMeta.find((entry) => event.title.includes(entry.match))?.meta ?? { tags: [] };
