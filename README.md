@@ -37,6 +37,14 @@ DELETE /api/v1/tasks/:id
 
 詳しい項目、認証方法、レスポンス、エラー、期間指定、ページング、curl例はAPIガイドを参照してください。
 
+## Discordイベント取込（試作）
+
+`/discord-import` でDiscordのイベント一覧メッセージを貼り付け、日付・時刻・タイトルを候補として抽出できます。候補は確認後に既存のMy Day予定へ登録します。現在は自由文のローカル解析で、AIによる補完や元Discordサーバーの自動巡回はまだ行いません。
+
+DiscordアプリのInteractions Endpoint URLには `/api/discord/interactions` を設定できます。`DISCORD_PUBLIC_KEY` をSitesのシークレットへ登録すると、メッセージコマンドの本文を署名検証付きで受け取り、候補の概要を非公開返信します。Bot Tokenはソースコードへ保存しません。
+
+メッセージコマンドの登録は、Bot Tokenを手元の環境変数へ設定したうえで `npm run discord:register` を実行します。`DISCORD_GUILD_ID` を指定すると自分のサーバー限定で即時反映され、未指定ならグローバルコマンドになります。
+
 ## 技術構成
 
 - Next.js / React
