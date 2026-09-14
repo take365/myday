@@ -54,3 +54,13 @@ button { cursor: pointer; }
   .calendar-card { padding: 18px 12px; }
   .day-cell { min-height: 88px; }
 }
+.shell { padding-bottom: 20px; }
+.topbar { height: 64px; }
+.dashboard { margin-top: 18px; }
+.day-cell { min-height: clamp(72px, calc((100vh - 190px) / 6), 128px); }
+.agenda-list { min-height: 0; overflow: auto; }
+@media (max-width: 900px) {
+  .topbar { height: 58px; }
+  .dashboard { margin-top: 12px; }
+  .day-cell { min-height: clamp(64px, calc((100vh - 150px) / 6), 88px); }
+}
