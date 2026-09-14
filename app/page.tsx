@@ -23,9 +23,26 @@ const fireTerraceChannelUrl = "https://discord.com/channels/1272562436393799760/
 const eventMeta: Array<{ match: string; meta: EventMeta }> = [
   { match: "はじめてのChatGPT Desktop", meta: { tags: ["オンライン", "関東地方", "中部地方", "関西地方"], sourceUrl: fireTerraceChannelUrl } },
   { match: "AI・IT無料相談室", meta: { tags: ["オンライン", "関東地方", "中部地方", "関西地方"], sourceUrl: fireTerraceChannelUrl } },
+  { match: "懇親会@池袋", meta: { tags: ["関東地方"], sourceUrl: fireTerraceChannelUrl } },
+  { match: "赤羽せんべろ会", meta: { tags: ["関東地方"], sourceUrl: fireTerraceChannelUrl } },
+  { match: "ビリヤード@新宿", meta: { tags: ["関東地方"], sourceUrl: fireTerraceChannelUrl } },
+  { match: "FIREとお金の話をしよう", meta: { tags: ["関東地方"], sourceUrl: fireTerraceChannelUrl } },
+  { match: "中級者向け不動産投資セミナー", meta: { tags: ["関東地方"], sourceUrl: fireTerraceChannelUrl } },
+  { match: "第11回ビットコイン投資初心者向けセミナー", meta: { tags: ["オンライン", "関東地方", "中部地方", "関西地方"], sourceUrl: fireTerraceChannelUrl } },
+  { match: "ピックルボール", meta: { tags: ["関東地方"], sourceUrl: "https://discord.com/channels/1272562436393799760/1543221533814694011" } },
   { match: "リアル脱出ゲーム@浅草", meta: { tags: ["関東地方"], sourceUrl: fireTerraceChannelUrl } },
   { match: "富士山を眺めながら屋上BBQ", meta: { tags: ["関東地方", "中部地方", "関西地方"], sourceUrl: fireTerraceChannelUrl } },
   { match: "品川】ランチ会", meta: { tags: ["関東地方"], sourceUrl: fireTerraceChannelUrl } },
+  { match: "上高地 涸沢ヒュッテ", meta: { tags: ["関東地方"], sourceUrl: fireTerraceChannelUrl } },
+  { match: "ストプレ募集", meta: { tags: ["関東地方"], sourceUrl: fireTerraceChannelUrl } },
+  { match: "ダーツ＆ランチ", meta: { tags: ["関東地方"], sourceUrl: fireTerraceChannelUrl } },
+  { match: "ミステリー・ザ・サード", meta: { tags: ["関東地方"], sourceUrl: fireTerraceChannelUrl } },
+  { match: "星がキレイな村", meta: { tags: ["関東地方"], sourceUrl: fireTerraceChannelUrl } },
+  { match: "FIREテラス1周年イベント", meta: { tags: ["関東地方"], sourceUrl: fireTerraceChannelUrl } },
+  { match: "大菩薩嶺", meta: { tags: ["関東地方"], sourceUrl: fireTerraceChannelUrl } },
+  { match: "横浜水石展", meta: { tags: ["関東地方"], sourceUrl: fireTerraceChannelUrl } },
+  { match: "大阪版 FIREテラス", meta: { tags: ["関西地方"], sourceUrl: fireTerraceChannelUrl } },
+  { match: "NGKお笑い観劇", meta: { tags: ["関西地方"], sourceUrl: fireTerraceChannelUrl } },
 ];
 function metadataFor(event: EventItem): EventMeta {
   return eventMeta.find((entry) => event.title.includes(entry.match))?.meta ?? { tags: [] };
