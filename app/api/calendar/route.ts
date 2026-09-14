@@ -13,9 +13,9 @@ export async function GET() {
   const user = await getCalendarUser();
   if (!user) return Response.json({ error: "Discordサーバーメンバーの認証が必要です。" }, { status: 401 });
   const db = getDb();
-  const ownerFilter = user.legacyEmail ? or(eq(events.ownerEmail, user.email), eq(events.ownerEmail, user.legacyEmail)) : eq(events.ownerEmail, user.email);
+  const ownerFilter = or(eq(events.ownerEmail, user.email), eq(events.ownerEmail, "discord:guild:undefined"));
   const rows = await db.select().from(events).where(ownerFilter).orderBy(desc(events.date), desc(events.startTime));
-  const files = await db.select().from(attachments).where(user.legacyEmail ? or(eq(attachments.ownerEmail, user.email), eq(attachments.ownerEmail, user.legacyEmail)) : eq(attachments.ownerEmail, user.email));
+  const files = await db.select().from(attachments).where(or(eq(attachments.ownerEmail, user.email), eq(attachments.ownerEmail, "discord:guild:undefined")));
   const fileMap = new Map<string, typeof files>();
   for (const file of files) fileMap.set(file.eventId, [...(fileMap.get(file.eventId) ?? []), file]);
   const usedBytes = files.reduce((total, file) => total + file.size, 0);
