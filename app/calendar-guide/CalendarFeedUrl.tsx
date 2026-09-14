@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 
 type FeedResponse = { url?: string; guildName?: string; error?: string };
 
-export default function CalendarFeedUrl() {
-  const [feed, setFeed] = useState<FeedResponse | null>(null);
+export default function CalendarFeedUrl({ initialFeed }: { initialFeed?: FeedResponse | null }) {
+  const [feed, setFeed] = useState<FeedResponse | null>(initialFeed ?? null);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
+    if (initialFeed?.url) return;
     fetch("/api/calendar/ical-url", { credentials: "include" })
       .then(async (response) => {
         const data = (await response.json()) as FeedResponse;
