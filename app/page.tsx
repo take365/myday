@@ -49,6 +49,8 @@ const eventMeta: Array<{ match: string; meta: EventMeta }> = [
   { match: "東京FIRE交流会", meta: { tags: ["関東地方"], sourceUrl: fireTerraceChannelUrl } },
   { match: "中部FIRE交流会", meta: { tags: ["中部地方"], sourceUrl: fireTerraceChannelUrl } },
   { match: "関西FIRE交流会", meta: { tags: ["関西地方"], sourceUrl: fireTerraceChannelUrl } },
+  { match: "人生を最期から逆算するカードゲーム", meta: { tags: ["関西地方"], sourceUrl: "https://discord.com/channels/1272562436393799760/1545767427965583431" } },
+  { match: "中部麻雀会", meta: { tags: ["中部地方"], sourceUrl: "https://discord.com/channels/1272562436393799760/1537064555077832734" } },
 ];
 function metadataFor(event: EventItem): EventMeta {
   return eventMeta.find((entry) => event.title.includes(entry.match))?.meta ?? { tags: [] };
