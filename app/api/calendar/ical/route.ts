@@ -41,7 +41,8 @@ export async function GET(request: Request) {
     "PRODID:-//My Day//Discord Event Calendar//JA",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
-    "X-WR-CALNAME:きたろうのサーバー イベント",
+    "NAME:FIREテラス",
+    "X-WR-CALNAME:FIREテラス",
     "X-WR-TIMEZONE:Asia/Tokyo",
     ...rows.flatMap((event) => {
       const summary = `SUMMARY:${escapeIcs(event.title)}`;
