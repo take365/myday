@@ -54,6 +54,16 @@ button { cursor: pointer; }
   .calendar-card { padding: 18px 12px; }
   .day-cell { min-height: 88px; }
 }
+.feed-url-box { background: #f0f5ee; border: 1px solid #d9e5dc; border-radius: 16px; padding: 16px; margin: 16px 0 20px; }
+.feed-url-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px; }
+.feed-url-heading span { color: #31896f; font-size: 11px; font-weight: 700; }
+.feed-url-row { display: flex; gap: 8px; margin-top: 11px; }
+.feed-url-row input { min-width: 0; flex: 1; border: 1px solid #cbd8cf; background: #fff; color: #52635a; border-radius: 9px; padding: 10px 11px; font: 11px var(--font-geist-mono), monospace; }
+.feed-copy-button { border: 0; cursor: pointer; white-space: nowrap; padding: 0 14px; font-size: 12px; }
+.feed-url-help, .feed-url-loading, .feed-url-error { margin: 9px 0 0; color: #68766e; font-size: 11px; line-height: 1.6; }
+.feed-url-error { color: #a45d45; }
+.feed-url-error a { color: var(--teal); font-weight: 700; }
+@media (max-width: 560px) { .feed-url-row { flex-direction: column; }.feed-copy-button { min-height: 40px; } }
 .dashboard { display: block; }
 .agenda-card { display: none; }
 .calendar-card { width: 100%; }
