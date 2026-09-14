@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "My Day | あなたの予定とタスク",
-  description: "予定とタスクをひとつにまとめる、個人用の小さなカレンダー。",
+  title: "イベントカレンダー | きたろうのサーバー",
+  description: "きたろうのDiscordサーバーで共有されたイベントを探すカレンダー。",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
