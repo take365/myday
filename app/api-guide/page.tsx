@@ -3,7 +3,7 @@ import { getCalendarUser } from "../calendar-auth";
 import ApiKeyPanel from "./api-key-panel";
 
 export const dynamic = "force-dynamic";
-const API_BASE = "https://my-day-calendar.chita256.chatgpt.site";
+const API_BASE = "https://calendar.chita256.chatgpt.site";
 function Code({ children }: { children: string }) { return <pre><code>{children}</code></pre>; }
 
 export default async function ApiGuidePage() {
