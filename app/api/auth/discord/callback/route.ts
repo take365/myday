@@ -22,8 +22,8 @@ export async function GET(request: Request) {
   const guildResponse = await fetch(`https://discord.com/api/v10/guilds/${e.DISCORD_GUILD_ID}`, { headers: { Authorization: `Bot ${e.DISCORD_BOT_TOKEN}` } });
   const guild = guildResponse.ok ? await guildResponse.json() as { name?: string } : {};
   const sessionCookie = await setDiscordSession({ id: user.id, username: memberInfo.nick?.trim() || user.username || user.id, guildName: guild.name ?? "Discordサーバー", exp: Date.now() + 7 * 24 * 60 * 60 * 1000 });
-  const response = Response.redirect(new URL("/", request.url), 302);
-  response.headers.append("Set-Cookie", sessionCookie);
-  response.headers.append("Set-Cookie", "myday_discord_oauth_state=; Path=/api/auth/discord; Max-Age=0; HttpOnly; Secure; SameSite=Lax");
-  return response;
+  const responseHeaders = new Headers({ Location: new URL("/", request.url).toString() });
+  responseHeaders.append("Set-Cookie", sessionCookie);
+  responseHeaders.append("Set-Cookie", "myday_discord_oauth_state=; Path=/api/auth/discord; Max-Age=0; HttpOnly; Secure; SameSite=Lax");
+  return new Response(null, { status: 302, headers: responseHeaders });
 }
