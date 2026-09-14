@@ -1,6 +1,5 @@
 import { env } from "cloudflare:workers";
 import { headers } from "next/headers";
-import { cookies } from "next/headers";
 
 const COOKIE = "myday_discord_session";
 const encoder = new TextEncoder();
@@ -24,7 +23,7 @@ export async function sessionCookie(session: Session) {
   const encoded = btoa(JSON.stringify(session));
   return `${COOKIE}=${encoded}.${await sign(encoded)}; Path=/; Max-Age=${60 * 60 * 24 * 7}; HttpOnly; Secure; SameSite=Lax`;
 }
-export async function setDiscordSession(session: Session) { const encoded = btoa(JSON.stringify(session)); (await cookies()).set(COOKIE, `${encoded}.${await sign(encoded)}`, { httpOnly: true, secure: true, sameSite: "lax", path: "/", maxAge: 60 * 60 * 24 * 7 }); }
-export async function clearDiscordSession() { (await cookies()).delete(COOKIE); }
+export async function setDiscordSession(session: Session) { const encoded = btoa(JSON.stringify(session)); return `${COOKIE}=${encoded}.${await sign(encoded)}; Path=/; Max-Age=${60 * 60 * 24 * 7}; HttpOnly; Secure; SameSite=Lax`; }
+export function clearDiscordSessionCookie() { return `${COOKIE}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax`; }
 export function discordOwnerKey(id: string) { return `discord:${id}`; }
 function cookieValue(header: string, name: string) { return header.split(";").map((part) => part.trim()).find((part) => part.startsWith(`${name}=`))?.slice(name.length + 1) ?? ""; }

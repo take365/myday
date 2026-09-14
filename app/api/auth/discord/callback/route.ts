@@ -1,14 +1,12 @@
-import { cookies } from "next/headers";
 import { env } from "cloudflare:workers";
-import { setDiscordSession, discordOwnerKey } from "../../../../discord-auth";
+import { setDiscordSession } from "../../../../discord-auth";
 export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
   const e = env as unknown as { DISCORD_APPLICATION_ID?: string; DISCORD_OAUTH_CLIENT_SECRET?: string; DISCORD_OAUTH_REDIRECT_URI?: string; DISCORD_BOT_TOKEN?: string; DISCORD_GUILD_ID?: string };
   const params = new URL(request.url).searchParams;
   const code = params.get("code");
   const state = params.get("state");
-  const expectedState = (await cookies()).get("myday_discord_oauth_state")?.value;
-  (await cookies()).delete("myday_discord_oauth_state");
+  const expectedState = request.headers.get("cookie")?.split(";").map((part) => part.trim()).find((part) => part.startsWith("myday_discord_oauth_state="))?.slice("myday_discord_oauth_state=".length);
   if (!code) return Response.redirect(new URL("/?discord_error=missing_code", request.url), 302);
   if (!state || !expectedState || state !== expectedState) return Response.redirect(new URL("/?discord_error=invalid_state", request.url), 302);
   const redirectUri = e.DISCORD_OAUTH_REDIRECT_URI ?? new URL("/api/auth/discord/callback", request.url).toString();
@@ -23,6 +21,9 @@ export async function GET(request: Request) {
   const memberInfo = await member.json() as { nick?: string | null };
   const guildResponse = await fetch(`https://discord.com/api/v10/guilds/${e.DISCORD_GUILD_ID}`, { headers: { Authorization: `Bot ${e.DISCORD_BOT_TOKEN}` } });
   const guild = guildResponse.ok ? await guildResponse.json() as { name?: string } : {};
-  await setDiscordSession({ id: user.id, username: memberInfo.nick?.trim() || user.username || user.id, guildName: guild.name ?? "Discordサーバー", exp: Date.now() + 7 * 24 * 60 * 60 * 1000 });
-  return Response.redirect(new URL("/", request.url), 302);
+  const sessionCookie = await setDiscordSession({ id: user.id, username: memberInfo.nick?.trim() || user.username || user.id, guildName: guild.name ?? "Discordサーバー", exp: Date.now() + 7 * 24 * 60 * 60 * 1000 });
+  const response = Response.redirect(new URL("/", request.url), 302);
+  response.headers.append("Set-Cookie", sessionCookie);
+  response.headers.append("Set-Cookie", "myday_discord_oauth_state=; Path=/api/auth/discord; Max-Age=0; HttpOnly; Secure; SameSite=Lax");
+  return response;
 }
