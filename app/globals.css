@@ -71,6 +71,20 @@ button { cursor: pointer; }
 .dashboard { margin-top: 18px; }
 .day-cell { min-height: clamp(72px, calc((100vh - 190px) / 6), 128px); }
 .agenda-list { min-height: 0; overflow: auto; }
+.tag-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.tag-filter { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line); border-radius: 999px; background: #fff; color: var(--muted); padding: 7px 11px; font-size: 11px; opacity: .48; transition: opacity .15s, box-shadow .15s; }
+.tag-filter.active { opacity: 1; box-shadow: 0 0 0 2px rgba(38,117,109,.12); color: var(--ink); }
+.tag-swatch, .event-tag { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #b7c0ba; flex: 0 0 auto; }
+.tag-online .tag-swatch, .event-tag.tag-online { background: #49a56f; }
+.tag-kanto .tag-swatch, .event-tag.tag-kanto { background: #397bd6; }
+.tag-chubu .tag-swatch, .event-tag.tag-chubu { background: #e8913a; }
+.tag-kansai .tag-swatch, .event-tag.tag-kansai { background: #e1b92f; }
+.event-tags { display: inline-flex; gap: 3px; margin-right: 4px; vertical-align: middle; }
+.event-tag { width: 7px; height: 7px; }
+.detail-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 15px; }
+.tag-badge { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 5px 8px; background: #f1f4ef; color: #58635a; font-size: 11px; }
+.source-link { display: inline-block; margin-top: 17px; color: var(--teal); font-size: 12px; text-decoration: none; }
+.source-link:hover { text-decoration: underline; }
 @media (max-width: 900px) {
   .topbar { height: 58px; }
   .dashboard { margin-top: 12px; }
