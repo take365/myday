@@ -21,8 +21,9 @@ export async function GET(request: Request) {
   if (!user.id || !e.DISCORD_BOT_TOKEN || !e.DISCORD_GUILD_ID) redirect("/?discord_error=configuration");
   const member = await fetch(`https://discord.com/api/v10/guilds/${e.DISCORD_GUILD_ID}/members/${user.id}`, { headers: { Authorization: `Bot ${e.DISCORD_BOT_TOKEN}` } });
   if (!member.ok) redirect("/?discord_error=not_member");
+  const memberInfo = await member.json() as { nick?: string | null };
   const guildResponse = await fetch(`https://discord.com/api/v10/guilds/${e.DISCORD_GUILD_ID}`, { headers: { Authorization: `Bot ${e.DISCORD_BOT_TOKEN}` } });
   const guild = guildResponse.ok ? await guildResponse.json() as { name?: string } : {};
-  await setDiscordSession({ id: user.id, username: user.username ?? user.id, guildName: guild.name ?? "Discordサーバー", exp: Date.now() + 7 * 24 * 60 * 60 * 1000 });
+  await setDiscordSession({ id: user.id, username: memberInfo.nick?.trim() || user.username || user.id, guildName: guild.name ?? "Discordサーバー", exp: Date.now() + 7 * 24 * 60 * 60 * 1000 });
   redirect("/");
 }
