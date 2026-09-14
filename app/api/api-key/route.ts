@@ -1,21 +1,21 @@
 import { and, eq } from "drizzle-orm";
-import { getChatGPTUser } from "../../chatgpt-auth";
+import { getCalendarUser } from "../../calendar-auth";
 import { getDb } from "../../../db";
 import { apiTokens } from "../../../db/schema";
 import { hashApiToken } from "../api-auth";
 
 export const dynamic = "force-dynamic";
-function unauthorized() { return Response.json({ error: "ChatGPT sign-in is required." }, { status: 401 }); }
+function unauthorized() { return Response.json({ error: "Discordサーバーメンバーの認証が必要です。" }, { status: 401 }); }
 
 export async function GET() {
-  const user = await getChatGPTUser();
+  const user = await getCalendarUser();
   if (!user) return unauthorized();
   const rows = await getDb().select({ id: apiTokens.id, name: apiTokens.name, tokenPrefix: apiTokens.tokenPrefix, lastUsedAt: apiTokens.lastUsedAt, createdAt: apiTokens.createdAt }).from(apiTokens).where(eq(apiTokens.ownerEmail, user.email));
   return Response.json({ keys: rows });
 }
 
 export async function POST(request: Request) {
-  const user = await getChatGPTUser();
+  const user = await getCalendarUser();
   if (!user) return unauthorized();
   const payload = await request.json().catch(() => ({})) as { name?: string };
   const raw = `md_${crypto.randomUUID().replaceAll("-", "")}${crypto.randomUUID().replaceAll("-", "")}`;
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const user = await getChatGPTUser();
+  const user = await getCalendarUser();
   if (!user) return unauthorized();
   const payload = await request.json() as { id?: string };
   if (!payload.id) return Response.json({ error: "id is required" }, { status: 400 });

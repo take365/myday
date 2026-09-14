@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getChatGPTUser } from "../chatgpt-auth";
+import { getCalendarUser } from "../calendar-auth";
 import ApiKeyPanel from "./api-key-panel";
 
 export const dynamic = "force-dynamic";
@@ -7,7 +7,7 @@ const API_BASE = "https://my-day-calendar.chita256.chatgpt.site";
 function Code({ children }: { children: string }) { return <pre><code>{children}</code></pre>; }
 
 export default async function ApiGuidePage() {
-  const user = await getChatGPTUser();
+  const user = await getCalendarUser();
   return <main className="guide-shell"><header className="guide-header"><Link href="/" className="guide-back">← My Day</Link><p className="eyebrow">DEVELOPER GUIDE</p><h1>My Day API</h1><p>My Dayに保存した予定を、AIや外部アプリから安全に読み書きするためのAPIです。すべてのエンドポイントはJSONを返します。</p></header><section className="guide-grid"><article className="guide-card guide-main">
     <p className="eyebrow">START HERE</p><h2>まず知っておくこと</h2><p>APIはログイン中のアカウントに発行したAPIキーで認証します。リクエストには毎回、次のヘッダーを付けてください。</p><Code>{`Authorization: Bearer md_あなたのAPIキー`}</Code>{user ? <ApiKeyPanel /> : <div className="guide-login"><p>APIキーを発行するにはChatGPTでログインしてください。</p><a className="primary-button guide-button" href="/signin-with-chatgpt?return_to=/api-guide">ChatGPTでログイン</a></div>}<div className="guide-warning"><strong>APIキーについて</strong><p>発行ボタンを押すと、キー本体はその場で一度だけ表示されます。後から再表示できないため、安全な場所に保存してください。紛失した場合は無効化して新しいキーを発行します。</p></div>
     <p className="eyebrow section-label">DATA MODEL</p><h2>タスクの項目</h2><div className="spec-table"><div className="spec-row spec-head"><span>項目</span><span>必須</span><span>説明</span></div><div className="spec-row"><code>title</code><span>必須</span><span>予定のタイトル。空文字は不可。</span></div><div className="spec-row"><code>date</code><span>必須</span><span><code>YYYY-MM-DD</code>形式。</span></div><div className="spec-row"><code>startTime</code><span>任意</span><span><code>HH:mm</code>形式。未指定は空文字。</span></div><div className="spec-row"><code>endTime</code><span>任意</span><span><code>HH:mm</code>形式。未指定は空文字。</span></div><div className="spec-row"><code>category</code><span>任意</span><span><code>仕事</code>・<code>生活</code>・<code>予定</code>。未指定は<code>仕事</code>。</span></div><div className="spec-row"><code>notes</code><span>任意</span><span>画面上の「メモ」に対応します。</span></div><div className="spec-row"><code>completed</code><span>任意</span><span><code>true</code>で完了。登録時はfalse。</span></div></div><div className="guide-note"><strong>日時とタイムゾーン</strong><p>日付と時刻は分けて送ります。タイムゾーン指定は現在サポートしておらず、日本時間（Asia/Tokyo）として扱います。</p></div>
