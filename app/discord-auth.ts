@@ -4,7 +4,7 @@ import { env } from "cloudflare:workers";
 const COOKIE = "myday_discord_session";
 const encoder = new TextEncoder();
 
-type Session = { id: string; username: string; exp: number };
+type Session = { id: string; username: string; guildName: string; exp: number };
 
 function secret() { return (env as unknown as { DISCORD_OAUTH_SESSION_SECRET?: string }).DISCORD_OAUTH_SESSION_SECRET ?? ""; }
 async function sign(value: string) { return Array.from(new Uint8Array(await crypto.subtle.sign("HMAC", await key(), encoder.encode(value)))).map((b) => b.toString(16).padStart(2, "0")).join(""); }
@@ -26,4 +26,3 @@ export async function setDiscordSession(session: Session) {
 
 export async function clearDiscordSession() { (await cookies()).delete(COOKIE); }
 export function discordOwnerKey(id: string) { return `discord:${id}`; }
-

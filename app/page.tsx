@@ -58,6 +58,7 @@ export default function Home() {
   const [events, setEvents] = useState<EventItem[]>(demoEventsFor(dateKey(initialDate)));
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [discordUser, setDiscordUser] = useState<string | null>(null);
+  const [discordGuild, setDiscordGuild] = useState<string | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
   const [detailEvent, setDetailEvent] = useState<EventItem | null>(null);
@@ -87,8 +88,9 @@ export default function Home() {
   async function checkDiscordAuth() {
     const response = await fetch("/api/auth/discord/me");
     if (response.ok) {
-      const data = await response.json() as { username: string };
+      const data = await response.json() as { username: string; guildName: string };
       setDiscordUser(data.username);
+      setDiscordGuild(data.guildName);
       await loadCalendar();
     }
     setAuthChecked(true);
@@ -176,7 +178,7 @@ export default function Home() {
       <p>重要な情報や、実際の予定は登録しないでください。</p>
     </aside>
     {notice && <div className="upload-notice" role="alert">{notice}<button onClick={() => setNotice(null)} aria-label="閉じる">×</button></div>}
-    <header className="topbar"><div className="brand"><span className="brand-mark">◒</span><span>My Day</span><span className="brand-pill">DISCORD MEMBER CALENDAR</span></div><div className="top-actions"><a className="ghost-button" href="/discord-import">Discord取込</a><span className="sync-label">Discord: {discordUser}</span><a className="ghost-button" href="/api/auth/discord/logout">ログアウト</a></div></header>
+    <header className="topbar"><div className="brand"><span className="brand-mark">◒</span><span>My Day</span><span className="brand-pill">{discordGuild ?? "DISCORD MEMBER CALENDAR"}</span></div><div className="top-actions"><a className="ghost-button" href="/discord-import">Discord取込</a><span className="sync-label">{discordGuild ?? "Discord"}: {discordUser}</span><a className="ghost-button" href="/api/auth/discord/logout">ログアウト</a></div></header>
     <section className="intro"><div><p className="eyebrow">YOUR SPACE, YOUR RHYTHM</p><h1>今日を、少しだけ<br /><em>軽くする。</em></h1><p className="subcopy">予定とタスクをひとつに。あなたのペースで使う、静かなカレンダー。</p></div><button className="primary-button" onClick={() => openNew()}>＋ 予定を追加</button></section>
     <section className="dashboard">
       <div className="calendar-card"><div className="calendar-head"><div><p className="eyebrow">CALENDAR</p><h2>{monthNames[cursor.getMonth()]} <span>{cursor.getFullYear()}</span></h2></div><div className="month-actions"><button onClick={() => setCursor(new Date(today.getFullYear(), today.getMonth(), 1))}>今日</button><button onClick={() => changeMonth(-1)}>‹</button><button onClick={() => changeMonth(1)}>›</button></div></div><div className="week-row">{weekNames.map((day) => <span key={day}>{day}</span>)}</div><div className="calendar-grid">{days.map((day) => { const key = dateKey(day); const dayEvents = events.filter((item) => item.date === key); return <button className={`day-cell ${day.getMonth() !== cursor.getMonth() ? "muted" : ""} ${key === selectedDate ? "selected" : ""} ${key === todayKey ? "today" : ""}`} key={key} onClick={() => setSelectedDate(key)}><span className="day-number">{day.getDate()}</span>{dayEvents.slice(0, 2).map((item) => <span className={`event-dot ${item.category === "生活" ? "green" : item.category === "予定" ? "yellow" : ""}`} key={item.id}>{item.title}</span>)}</button>; })}</div></div>
