@@ -57,6 +57,8 @@ export default function Home() {
   const [selectedDate, setSelectedDate] = useState(dateKey(initialDate));
   const [events, setEvents] = useState<EventItem[]>(demoEventsFor(dateKey(initialDate)));
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [discordUser, setDiscordUser] = useState<string | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
   const [detailEvent, setDetailEvent] = useState<EventItem | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -79,8 +81,18 @@ export default function Home() {
     setSelectedDate(currentKey);
     setForm(emptyForm(currentKey));
     setEvents(demoEventsFor(currentKey));
-    void loadCalendar();
+    void checkDiscordAuth();
   }, []);
+
+  async function checkDiscordAuth() {
+    const response = await fetch("/api/auth/discord/me");
+    if (response.ok) {
+      const data = await response.json() as { username: string };
+      setDiscordUser(data.username);
+      await loadCalendar();
+    }
+    setAuthChecked(true);
+  }
 
   async function loadCalendar() {
     const response = await fetch("/api/calendar");
@@ -155,6 +167,8 @@ export default function Home() {
   const storagePercent = Math.min(100, (usedBytes / storageLimit) * 100);
   const formatSize = (bytes: number) => bytes < 1024 * 1024 ? `${Math.round(bytes / 1024)}KB` : `${(bytes / 1024 / 1024).toFixed(2)}MB`;
 
+  if (authChecked && !discordUser) return <main className="shell"><section className="intro"><div><p className="eyebrow">DISCORD MEMBER ONLY</p><h1>きたろうのサーバー<br /><em>メンバー専用。</em></h1><p className="subcopy">Discordアカウントでログインすると、サーバーメンバーだけがカレンダーを閲覧できます。</p><a className="primary-button link-button" href="/api/auth/discord/start">Discordでログイン</a></div></section></main>;
+  if (!authChecked) return <main className="shell"><section className="intro"><p className="subcopy">Discord認証を確認しています…</p></section></main>;
   return <main className="shell">
     <aside className="demo-warning" role="note" aria-label="デモサイトの注意事項">
       <strong>デモ用サイトです</strong>
@@ -162,7 +176,7 @@ export default function Home() {
       <p>重要な情報や、実際の予定は登録しないでください。</p>
     </aside>
     {notice && <div className="upload-notice" role="alert">{notice}<button onClick={() => setNotice(null)} aria-label="閉じる">×</button></div>}
-    <header className="topbar"><div className="brand"><span className="brand-mark">◒</span><span>My Day</span><span className="brand-pill">PRIVATE CALENDAR</span></div><div className="top-actions"><a className="ghost-button" href="/discord-import">Discord取込</a><a className="ghost-button" href="/api-guide">APIガイド</a><span className="sync-label">{userEmail ? "ChatGPTでログイン中" : "サンプル表示中"}</span>{userEmail ? <button className="ghost-button" onClick={() => setSettingsOpen(true)}>アカウント</button> : <a className="ghost-button" href="/signin-with-chatgpt?return_to=/">ChatGPTでログイン</a>}</div></header>
+    <header className="topbar"><div className="brand"><span className="brand-mark">◒</span><span>My Day</span><span className="brand-pill">DISCORD MEMBER CALENDAR</span></div><div className="top-actions"><a className="ghost-button" href="/discord-import">Discord取込</a><span className="sync-label">Discord: {discordUser}</span><a className="ghost-button" href="/api/auth/discord/logout">ログアウト</a></div></header>
     <section className="intro"><div><p className="eyebrow">YOUR SPACE, YOUR RHYTHM</p><h1>今日を、少しだけ<br /><em>軽くする。</em></h1><p className="subcopy">予定とタスクをひとつに。あなたのペースで使う、静かなカレンダー。</p></div><button className="primary-button" onClick={() => openNew()}>＋ 予定を追加</button></section>
     <section className="dashboard">
       <div className="calendar-card"><div className="calendar-head"><div><p className="eyebrow">CALENDAR</p><h2>{monthNames[cursor.getMonth()]} <span>{cursor.getFullYear()}</span></h2></div><div className="month-actions"><button onClick={() => setCursor(new Date(today.getFullYear(), today.getMonth(), 1))}>今日</button><button onClick={() => changeMonth(-1)}>‹</button><button onClick={() => changeMonth(1)}>›</button></div></div><div className="week-row">{weekNames.map((day) => <span key={day}>{day}</span>)}</div><div className="calendar-grid">{days.map((day) => { const key = dateKey(day); const dayEvents = events.filter((item) => item.date === key); return <button className={`day-cell ${day.getMonth() !== cursor.getMonth() ? "muted" : ""} ${key === selectedDate ? "selected" : ""} ${key === todayKey ? "today" : ""}`} key={key} onClick={() => setSelectedDate(key)}><span className="day-number">{day.getDate()}</span>{dayEvents.slice(0, 2).map((item) => <span className={`event-dot ${item.category === "生活" ? "green" : item.category === "予定" ? "yellow" : ""}`} key={item.id}>{item.title}</span>)}</button>; })}</div></div>

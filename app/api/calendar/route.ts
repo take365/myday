@@ -1,5 +1,5 @@
 import { desc, eq } from "drizzle-orm";
-import { getChatGPTUser } from "../../chatgpt-auth";
+import { getCalendarUser } from "../../calendar-auth";
 import { getDb } from "../../../db";
 import { attachments, events } from "../../../db/schema";
 
@@ -10,8 +10,8 @@ function unauthorized() {
 }
 
 export async function GET() {
-  const user = await getChatGPTUser();
-  if (!user) return unauthorized();
+  const user = await getCalendarUser();
+  if (!user) return Response.json({ error: "Discordサーバーメンバーの認証が必要です。" }, { status: 401 });
   const db = getDb();
   const rows = await db.select().from(events).where(eq(events.ownerEmail, user.email)).orderBy(desc(events.date), desc(events.startTime));
   const files = await db.select().from(attachments).where(eq(attachments.ownerEmail, user.email));
@@ -22,8 +22,8 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const user = await getChatGPTUser();
-  if (!user) return unauthorized();
+  const user = await getCalendarUser();
+  if (!user) return Response.json({ error: "Discordサーバーメンバーの認証が必要です。" }, { status: 401 });
   const payload = await request.json() as Partial<typeof events.$inferInsert>;
   const title = payload.title?.trim() ?? "";
   const date = payload.date?.trim() ?? "";

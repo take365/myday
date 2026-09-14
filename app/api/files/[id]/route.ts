@@ -1,5 +1,5 @@
 import { and, eq } from "drizzle-orm";
-import { getChatGPTUser } from "../../../chatgpt-auth";
+import { getCalendarUser } from "../../../calendar-auth";
 import { getDb } from "../../../../db";
 import { attachments } from "../../../../db/schema";
 import { env } from "cloudflare:workers";
@@ -7,7 +7,7 @@ import { env } from "cloudflare:workers";
 export const dynamic = "force-dynamic";
 
 export async function GET(_request: Request, context: { params: Promise<{ id: string }> }) {
-  const user = await getChatGPTUser();
+  const user = await getCalendarUser();
   if (!user || !env.FILES) return new Response("Not found", { status: 404 });
   const { id } = await context.params;
   const db = getDb();

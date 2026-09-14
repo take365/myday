@@ -1,4 +1,4 @@
-import { getChatGPTUser } from "../../chatgpt-auth";
+import { getCalendarUser } from "../../calendar-auth";
 import { getDb } from "../../../db";
 import { attachments } from "../../../db/schema";
 import { env } from "cloudflare:workers";
@@ -7,8 +7,8 @@ export const dynamic = "force-dynamic";
 const MAX_FILE_BYTES = 1024 * 1024;
 
 export async function POST(request: Request) {
-  const user = await getChatGPTUser();
-  if (!user) return Response.json({ error: "ChatGPT sign-in is required." }, { status: 401 });
+  const user = await getCalendarUser();
+  if (!user) return Response.json({ error: "Discordサーバーメンバーの認証が必要です。" }, { status: 401 });
   const form = await request.formData();
   const file = form.get("file");
   const eventId = String(form.get("eventId") ?? "");

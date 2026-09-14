@@ -1,5 +1,5 @@
 import { and, eq } from "drizzle-orm";
-import { getChatGPTUser } from "../../../chatgpt-auth";
+import { getCalendarUser } from "../../../calendar-auth";
 import { getDb } from "../../../../db";
 import { attachments, events } from "../../../../db/schema";
 import { env } from "cloudflare:workers";
@@ -7,8 +7,8 @@ import { env } from "cloudflare:workers";
 export const dynamic = "force-dynamic";
 
 export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
-  const user = await getChatGPTUser();
-  if (!user) return Response.json({ error: "ChatGPT sign-in is required." }, { status: 401 });
+  const user = await getCalendarUser();
+  if (!user) return Response.json({ error: "Discordサーバーメンバーの認証が必要です。" }, { status: 401 });
   const { id } = await context.params;
   const payload = await request.json() as { completed?: boolean; title?: string; date?: string; startTime?: string; endTime?: string; category?: string; notes?: string };
   const db = getDb();
@@ -18,8 +18,8 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
 }
 
 export async function DELETE(_request: Request, context: { params: Promise<{ id: string }> }) {
-  const user = await getChatGPTUser();
-  if (!user) return Response.json({ error: "ChatGPT sign-in is required." }, { status: 401 });
+  const user = await getCalendarUser();
+  if (!user) return Response.json({ error: "Discordサーバーメンバーの認証が必要です。" }, { status: 401 });
   const { id } = await context.params;
   const db = getDb();
   const files = await db.select().from(attachments).where(and(eq(attachments.eventId, id), eq(attachments.ownerEmail, user.email)));
